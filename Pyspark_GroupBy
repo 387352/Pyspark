@@ -1,0 +1,23 @@
+# Databricks notebook source
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import sum,max,min,count,avg
+spark = SparkSession.builder.appName("Spark DF GroupBy").getOrCreate()
+
+
+# COMMAND ----------
+
+df = spark.read.options(header="True", inferSchema = "True").csv("/FileStore/tables/StudentData.csv")
+#df.show()
+df1 = df.groupby(df.course,df.gender).agg(count("*").alias("Total_enrollment"),sum(df.marks).alias("Total_marks"))
+
+#df1.sort(df.gender.asc(),df.course.asc()).show()
+
+df2 = df.groupby(df.course,df.age).agg(min(df.marks).alias("Minimum_Marks"),max(df.marks).alias("Max_marks"),avg(df.marks).alias("avg marks"))
+df2.orderBy(df.course.asc()).show()
+
+df.createOrReplaceTempView("Students_view")
+spark.sql("select course,age,min(marks),max(marks),avg(marks) from Students_view group By course,age order by course ").show()
+
+# COMMAND ----------
+
+
