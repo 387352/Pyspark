@@ -28,7 +28,7 @@ def IncSalary(salary,age):
     salary = salary+500
   return salary
 
-udfIncSalary = udf(lambda x,y:IncSalary(x,y),IntegerType())
+udfIncSalary = f.udf(lambda x,y:IncSalary(x,y),IntegerType())
 
 df.withColumn("salary",udfIncSalary(f.col("salary"),f.col("age"))).show()
 
